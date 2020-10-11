@@ -1,0 +1,22 @@
+
+.puzzle {
+    position: relative;
+}
+.puzzle img.bg {
+    width: 600px;
+    height: 450px;
+    position: absolute;
+    left: 0;
+    top: 0;
+    z-index: -1;
+}
+
+.puzzle table td {
+    width: 98px;
+    height: 111px;
+    background-color: red;
+}
+
+.puzzle table td.revealed {
+    background-color: transparent;
+}
