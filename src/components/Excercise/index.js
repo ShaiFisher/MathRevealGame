@@ -68,7 +68,7 @@ function initExercise() {
   }
   resultStr = calc(num1, num2, op) + "";
   answer = "";
-  console.log('init: ' + num1 + ' ' + op + ' ' + num2);
+  //console.log('init: ' + num1 + ' ' + op + ' ' + num2);
 }
 
 initExercise();

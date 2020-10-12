@@ -8,9 +8,7 @@ import Puzzle from '../Puzzle';
 import './App.css';
 
 
-const MISSION_POINTS = 2;
 let players = JSON.parse(localStorage.getItem("players") || "[]");
-console.log("players from storage:", players);
 if (!players.legth) {
   players.push({
     name: "Shai",
@@ -18,33 +16,24 @@ if (!players.legth) {
   });
 }
 let player = players[0];
-let points = 0;
 let missionComplete = false;
-let showExcercise = true;
 
 
 function App() {
   const [, updateState] = React.useState();
   const forceUpdate = React.useCallback(() => updateState({}), []);
 
-  const handleCorrect = () => {
-    console.log('handleCorrect', points);
-    points++;
-
-    if (points === MISSION_POINTS) {
-      missionComplete = true;
-      showExcercise = false;
-      player.missions++;
-      localStorage.setItem("players", JSON.stringify(players));
-      setTimeout(() => {
-        points = 0;
-        missionComplete = false;
-        showExcercise = true;
-        forceUpdate();
-      }, 8000);
-    }
+  const handleComplete = () => {
+    console.log("handleComplete");
+    missionComplete = true;
+    player.missions++;
+    localStorage.setItem("players", JSON.stringify(players));
     forceUpdate();
-  };
+    setTimeout(() => {
+      missionComplete = false;
+      forceUpdate();
+    }, 8000);
+  }
 
   return (
     <div className="App">
@@ -53,14 +42,8 @@ function App() {
           <Col>Player: {player.name}</Col>
           <Col>Missions: {player.missions}</Col>
         </Row>
-        <Row>
-          <Col>
-            {(showExcercise && 
-              <Exercise oncorrect={handleCorrect}></Exercise>
-            )}
-          </Col>
-          <Col><Puzzle points={points} /></Col>
-        </Row>
+
+        <Puzzle onComplete={handleComplete}/>
       </Container>
 
       {(missionComplete && <Confetti />)}
