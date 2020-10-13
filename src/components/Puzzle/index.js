@@ -1,6 +1,7 @@
 import React from 'react';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
+import Shake from 'react-reveal/HeadShake';
 import Exercise from '../Excercise';
 import './puzzle.css';
 
@@ -12,6 +13,7 @@ const MISSION_POINTS = ROWS * COLS;
 let points = 0;
 let cells = [...Array(ROWS)].map(x=>Array(COLS).fill(false));
 let bgImage;
+let isMistake = false;
 
 const rand = (range) => {
   return Math.floor(Math.random() * range);
@@ -64,27 +66,38 @@ function Puzzle(props) {
         forceUpdate();
     };
 
+    const handleMistake = () => {
+        isMistake = true;
+        forceUpdate();
+        setTimeout(() => {
+            isMistake = false;
+            forceUpdate();
+        }, 1000);
+    };
+
     return (
         <Row>
           <Col>
             {(showExcercise && 
-              <Exercise oncorrect={handleCorrect}></Exercise>
+              <Exercise onCorrect={handleCorrect} onMistake={handleMistake}></Exercise>
             )}
           </Col>
           <Col xs={7}>
             <div className="puzzle">
-                <img src={bgImage} alt="background" className="bg" />
-                <table cellSpacing="0" className="cells">
-                    <tbody>
-                        {cells.map((row, index) =>
-                            <tr key={index}>
-                                {row.map((isRevealed, index) => 
-                                    <td key={index} className={isRevealed ? "revealed" : ""}>{isRevealed}</td>
-                                )}
-                            </tr>
-                        )}
-                    </tbody>
-                </table>
+                <Shake when={isMistake}>
+                    <img src={bgImage} alt="background" className="bg" />
+                    <table cellSpacing="0" className="cells">
+                        <tbody>
+                            {cells.map((row, index) =>
+                                <tr key={index}>
+                                    {row.map((isRevealed, index) => 
+                                        <td key={index} className={isRevealed ? "revealed" : ""}>{isRevealed}</td>
+                                    )}
+                                </tr>
+                            )}
+                        </tbody>
+                    </table>
+                </Shake>
             </div>
           </Col>
         </Row>

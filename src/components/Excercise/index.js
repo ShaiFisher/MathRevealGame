@@ -3,6 +3,7 @@ import './exercise.css';
 import useEventListener from '@use-it/event-listener'
 import Button from 'react-bootstrap/Button';
 import ButtonGroup from 'react-bootstrap/ButtonGroup';
+import Row from 'react-bootstrap/Row';
 
 
 const OP_PLUS = '+';
@@ -82,12 +83,13 @@ function Exercise(props) {
       answer += key
       if (answer === resultStr) {
         setTimeout(() => {
-          props.oncorrect();
+          props.onCorrect();
           initExercise();
           forceUpdate();
         }, 1000);
       } else if (!resultStr.startsWith(answer)) {
         isWrong = true;
+        props.onMistake();
         setTimeout(() => {
           answer = "";
           isWrong = false;
@@ -111,22 +113,26 @@ function Exercise(props) {
   };
 
   return (
-    <div className="exercise">
-      <div className="control">
-        <ButtonGroup aria-label="Basic example">
-          {OPERATORS.map((op, index) => 
-              <Button
-                key={op}
-                name={op}
-                variant={isOpAvailable[op] ? "success" : "outline-secondary"}
-                onClick={toggleOp}
-              >{op}</Button>
-          )}
-        </ButtonGroup>
-      </div>
-      <h1>{num1} {op} {num2} = 
-        <span className={isWrong ? "wrong" : ""}> {answer}</span>
-      </h1>
+    <div className="exercise-wrap">
+      <Row>
+        <div className="control">
+          <ButtonGroup aria-label="Basic example">
+            {OPERATORS.map((op, index) => 
+                <Button
+                  key={op}
+                  name={op}
+                  variant={isOpAvailable[op] ? "success" : "outline-secondary"}
+                  onClick={toggleOp}
+                >{op}</Button>
+            )}
+          </ButtonGroup>
+        </div>
+      </Row>
+      <Row className="exercise">
+        <h1>{num1} {op} {num2} = 
+          <span className={isWrong ? "wrong" : ""}> {answer}</span>
+        </h1>
+      </Row>
     </div>
   );
 }

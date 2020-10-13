@@ -3,7 +3,6 @@ import Confetti from 'react-confetti'
 import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
-import Exercise from '../Excercise';
 import Puzzle from '../Puzzle';
 import './App.css';
 
@@ -24,7 +23,6 @@ function App() {
   const forceUpdate = React.useCallback(() => updateState({}), []);
 
   const handleComplete = () => {
-    console.log("handleComplete");
     missionComplete = true;
     player.missions++;
     localStorage.setItem("players", JSON.stringify(players));

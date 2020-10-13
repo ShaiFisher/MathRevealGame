@@ -9,3 +9,8 @@ h1 {
 .wrong {
     color: red;
 }
+
+.exercise {
+    height: 450px;
+    align-items: center;
+}
