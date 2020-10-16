@@ -1,84 +1,94 @@
 import React from 'react';
 import './exercise.css';
 import useEventListener from '@use-it/event-listener'
-import Button from 'react-bootstrap/Button';
 import ButtonGroup from 'react-bootstrap/ButtonGroup';
+import Dropdown from 'react-bootstrap/Dropdown';
+import DropdownButton from 'react-bootstrap/DropdownButton';
 import Row from 'react-bootstrap/Row';
+import { t } from '../../utils/translation';
+import { calc, rand } from '../../utils/math';
 
 
 const OP_PLUS = '+';
 const OP_MINUS = '-';
 const OP_MULTI = '×';
 const OP_DIV = '÷';
-const OPERATORS = [ OP_PLUS, OP_MINUS, OP_MULTI, OP_DIV];
-const RANGES = [ 25, 15, 10, 8];
+const RANGES = [ 5, 10, 20, 50 ];
+const OPERATORS_DEFAULTS = [
+  {
+    char: OP_PLUS,
+    enabled: true,
+    range: 50,
+    calc: (num1, num2) => num1 + num2
+  },
+  {
+    char: OP_MINUS,
+    enabled: true,
+    range: 20,
+    calc: (num1, num2) => num1 - num2
+  },
+  {
+    char: OP_MULTI,
+    enabled: true,
+    range: 10,
+    calc: (num1, num2) => num1 * num2
+  },
+  {
+    char: OP_DIV,
+    enabled: true,
+    range: 5,
+    calc: (num1, num2) => num1 / num2
+  }
+];
 
 let num1;
 let num2;
-let op;
+let operators = OPERATORS_DEFAULTS;
+let op = operators[0]; // curren operator objet
 let resultStr;
 let answer = "";
 let isWrong = false;
-let isOpAvailable = {
-  [OP_PLUS]: true,
-  [OP_MINUS]: true,
-  [OP_MULTI]: true,
-  [OP_DIV]: true
-};
-
-const rand = (range) => {
-  return Math.floor(Math.random() * range);
-}
-
-function calc(num1, num2, op) {
-  switch(op) {
-    case OP_PLUS:
-      return num1 + num2;
-    case OP_MINUS:
-      return num1 - num2;
-    case OP_MULTI:
-      return num1 * num2;
-    case OP_DIV:
-      return num1 / num2;
-    default:
-      return num1 + num2;
-  }
-}
 
 function initExercise() {
-  let opi;
   do {
-    opi = rand(4);
-    op = OPERATORS[opi];
-  } while (!isOpAvailable[op]);
+    const opi = rand(operators.length);
+    op = operators[opi];
+  } while (!op.enabled);
 
-  const range = RANGES[opi];
-  num1 = rand(range);
-  num2 = rand(range);
+  num1 = rand(op.range);
+  num2 = rand(op.range);
 
-  if (op === OP_MINUS && num2 > num1) {
+  if (op.char === OP_MINUS && num2 > num1) {
     const temp = num1;
     num1 = num2;
     num2 = temp;
   }
-  if (op === OP_DIV) {
+  if (op.char === OP_DIV) {
     while (num2 === 0) {
-      num2 = rand(range);
+      num2 = rand(op.range);
     }
     num1 = num1 * num2;
   }
-  resultStr = calc(num1, num2, op) + "";
+  resultStr = calc(num1, num2, op.char) + "";
   answer = "";
-  //console.log('init: ' + num1 + ' ' + op + ' ' + num2);
+  //console.log('init: ' + num1 + ' ' + op.char + ' ' + num2);
 }
 
 initExercise();
 
 function Exercise(props) {
+  //console.log("Exercise", props);
   const [, updateState] = React.useState();
   const forceUpdate = React.useCallback(() => updateState({}), []);
 
-  useEventListener('keydown', ({key}) => {
+  if (props.player.operators) {
+    operators = props.player.operators;
+  } else {
+    props.player.operators = OPERATORS_DEFAULTS;
+    props.onConfig();
+  }
+
+  useEventListener('keydown1', ({key}) => {
     if (key >=0 && key <=9) {
       answer += key
       if (answer === resultStr) {
@@ -101,15 +111,23 @@ function Exercise(props) {
   });
 
   const toggleOp = (event) => {
-    const operatorsLeft = OPERATORS.filter((op) => isOpAvailable[op]).length;
-    const tOp = event.target.name;
-    if (operatorsLeft > 1 || !isOpAvailable[tOp]) {
-      isOpAvailable[tOp] = !isOpAvailable[tOp];
-      if (tOp === op) {
-        initExercise();
+    const operatorsLeft = operators.filter((op) => op.enabled).length;
+    const opChar = event.target.name[0];
+    const opObj = operators.filter(op => op.char === opChar)[0];
+    const range = event.target.name.substring(1);
+    
+    if (range === "x") {  // toggle
+      if (operatorsLeft > 1 || !opObj.enabled) {
+        opObj.enabled = !opObj.enabled;
       }
-      forceUpdate();
+    } else {
+      opObj.range = parseInt(range);
+      opObj.enabled = true;
     }
+    //console.log("toggleOp", opChar, range, opObj);
+    initExercise();
+    props.onConfig();
+    forceUpdate();
   };
 
   return (
@@ -117,19 +135,36 @@ function Exercise(props) {
       <Row>
         <div className="control">
           <ButtonGroup aria-label="Basic example">
-            {OPERATORS.map((op, index) => 
-                <Button
-                  key={op}
-                  name={op}
-                  variant={isOpAvailable[op] ? "success" : "outline-secondary"}
-                  onClick={toggleOp}
-                >{op}</Button>
+            {operators.map((op, index) => 
+              <DropdownButton
+                id="dropdown-item-button"
+                key={op.char}
+                title={op.char}
+                variant={op.enabled ? "success" : "outline-secondary"}
+              >
+                <Dropdown.Item 
+                    as="button"
+                    name={op.char + "x"}
+                    onClick={toggleOp}
+                >{t("Toggle")}
+                </Dropdown.Item>
+                <Dropdown.Divider />
+                {RANGES.map(range => 
+                  <Dropdown.Item 
+                    key={range}
+                    as="button"
+                    active={op.range === range}
+                    name={op.char + range}
+                    onClick={toggleOp}
+                  >{range}</Dropdown.Item>
+                )}
+              </DropdownButton>
             )}
-          </ButtonGroup>
+            </ButtonGroup>
         </div>
       </Row>
       <Row className="exercise">
-        <h1>{num1} {op} {num2} = 
+        <h1>{num1} {op.char} {num2} = 
           <span className={isWrong ? "wrong" : ""}> {answer}</span>
         </h1>
       </Row>

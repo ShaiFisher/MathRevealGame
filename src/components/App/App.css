@@ -40,3 +40,13 @@
 table td {
   text-align: center;
 }
+
+.modal-content {
+  direction: rtl;
+  text-align: right;
+}
+
+.modal-header .close {
+  padding: 0;
+  margin: 0;
+}

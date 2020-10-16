@@ -79,7 +79,12 @@ function Puzzle(props) {
         <Row>
           <Col>
             {(showExcercise && 
-              <Exercise onCorrect={handleCorrect} onMistake={handleMistake}></Exercise>
+              <Exercise 
+                player={props.player}
+                onCorrect={handleCorrect}
+                onMistake={handleMistake}
+                onConfig={props.onConfig}
+            ></Exercise>
             )}
           </Col>
           <Col xs={7}>
