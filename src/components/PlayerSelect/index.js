@@ -51,7 +51,7 @@ function PlayerSelect({ players, player, onPlayersChange, onSwitchPlayer }) {
     if (newName) {
       players.push({
         name: newName,
-        Missions: 0,
+        missions: 0,
       });
       onPlayersChange();
       onSwitchPlayer(newName);

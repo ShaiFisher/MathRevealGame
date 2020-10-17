@@ -14,6 +14,9 @@ if (!players.length) {
     name: "Player1",
     missions: 0
   });
+} else {
+  // temp fix
+  players.forEach(player => player.missions = player.missions || player.Missions || 0);
 }
 //console.log("players:", players);
 let missionComplete = false;
