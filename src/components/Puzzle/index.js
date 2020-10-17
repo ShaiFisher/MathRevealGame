@@ -41,13 +41,18 @@ function initPuzzle() {
 
 
 
-function Puzzle(props) {
+function Puzzle({
+    player, images, onComplete, onConfig
+}) {
 
     const [, updateState] = React.useState();
     const forceUpdate = React.useCallback(() => updateState({}), []);
 
     if (points === 0) {
         initPuzzle();
+        if (images && images.length) {
+            bgImage = images[0];
+        }
     }
 
     const handleCorrect = () => {
@@ -56,7 +61,7 @@ function Puzzle(props) {
 
         if (points === MISSION_POINTS) {
             showExcercise = false;
-            props.onComplete();
+            onComplete();
             setTimeout(() => {
                 points = 0;
                 showExcercise = true;
@@ -80,10 +85,10 @@ function Puzzle(props) {
           <Col>
             {(showExcercise && 
               <Exercise 
-                player={props.player}
+                player={player}
                 onCorrect={handleCorrect}
                 onMistake={handleMistake}
-                onConfig={props.onConfig}
+                onConfig={onConfig}
             ></Exercise>
             )}
           </Col>

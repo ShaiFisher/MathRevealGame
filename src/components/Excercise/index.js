@@ -88,7 +88,7 @@ function Exercise(props) {
     props.onConfig();
   }
 
-  useEventListener('keydown1', ({key}) => {
+  useEventListener('keydown', ({key}) => {
     if (key >=0 && key <=9) {
       answer += key
       if (answer === resultStr) {
