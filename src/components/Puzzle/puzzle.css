@@ -19,7 +19,7 @@
     width: 98px;
     height: 111px;
     background-color: red;
-    background-image: URL(/curtain.jpg);
+    background-image: URL(curtain.jpg);
 }
 
 .puzzle table.cells td.revealed {

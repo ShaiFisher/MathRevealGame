@@ -83,7 +83,7 @@ function Puzzle(props) {
                 player={props.player}
                 onCorrect={handleCorrect}
                 onMistake={handleMistake}
-                onConfig={props.onConfig}
+                onUpdatePlayer={props.onConfig}
             ></Exercise>
             )}
           </Col>
