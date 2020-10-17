@@ -6,7 +6,7 @@ import Exercise from '../Excercise';
 import './puzzle.css';
 
 let showExcercise = true;
-const BG_NUM = 5;
+const BG_NUM = 10;
 const ROWS = 4;
 const COLS = 6;
 const MISSION_POINTS = ROWS * COLS;
@@ -35,7 +35,7 @@ function initPuzzle() {
     }
     const oldImage = bgImage;
     do {
-        bgImage = "bg" + (rand(BG_NUM) + 1) + ".jpg";
+        bgImage = "p" + (rand(BG_NUM) + 1) + ".jpg";
     } while (bgImage === oldImage);
 }
 
