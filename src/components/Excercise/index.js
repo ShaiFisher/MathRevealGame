@@ -133,7 +133,7 @@ function Exercise({
     }
     //console.log("toggleOp", opChar, range, opObj);
     initExercise();
-    onConfig();
+    onUpdatePlayer();
     forceUpdate();
   };
 
