@@ -48,8 +48,10 @@ let op = operators[0]; // curren operator objet
 let resultStr;
 let answer = "";
 let isWrong = false;
+let currentPlayerName;
 
 function initExercise() {
+  console.log('initExercise:', operators);
   do {
     const opi = rand(operators.length);
     op = operators[opi];
@@ -76,16 +78,21 @@ function initExercise() {
 
 initExercise();
 
-function Exercise(props) {
-  //console.log("Exercise", props);
+function Exercise({
+  player, onCorrect, onMistake, onUpdatePlayer
+}) {
   const [, updateState] = React.useState();
   const forceUpdate = React.useCallback(() => updateState({}), []);
 
-  if (props.player.operators) {
-    operators = props.player.operators;
-  } else {
-    props.player.operators = OPERATORS_DEFAULTS;
-    props.onConfig();
+  if (player.name !== currentPlayerName) {
+    if (player.operators) {
+      operators = player.operators;
+    } else {
+      player.operators = OPERATORS_DEFAULTS;
+      onUpdatePlayer();
+    }
+    currentPlayerName = player.name;
+    initExercise();
   }
 
   useEventListener('keydown', ({key}) => {
@@ -93,13 +100,13 @@ function Exercise(props) {
       answer += key
       if (answer === resultStr) {
         setTimeout(() => {
-          props.onCorrect();
+          onCorrect();
           initExercise();
           forceUpdate();
         }, 1000);
       } else if (!resultStr.startsWith(answer)) {
         isWrong = true;
-        props.onMistake();
+        onMistake();
         setTimeout(() => {
           answer = "";
           isWrong = false;
@@ -126,7 +133,7 @@ function Exercise(props) {
     }
     //console.log("toggleOp", opChar, range, opObj);
     initExercise();
-    props.onConfig();
+    onUpdatePlayer();
     forceUpdate();
   };
 
