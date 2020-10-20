@@ -1,118 +1,111 @@
-import React from 'react';
-import Row from 'react-bootstrap/Row';
-import Col from 'react-bootstrap/Col';
-import Shake from 'react-reveal/HeadShake';
-import Exercise from '../Excercise';
-import './puzzle.css';
+import React, { useState } from "react";
+import Row from "react-bootstrap/Row";
+import Col from "react-bootstrap/Col";
+import Shake from "react-reveal/HeadShake";
+import Exercise from "../Excercise";
+import { rand } from '../../utils/math';
+import "./puzzle.css";
 
-let showExcercise = true;
-const BG_NUM = 10;
+//let showExcercise = true;
 const ROWS = 4;
 const COLS = 6;
 const MISSION_POINTS = ROWS * COLS;
 let points = 0;
-let cells = [...Array(ROWS)].map(x=>Array(COLS).fill(false));
-let bgImage;
-let isMistake = false;
-
-const rand = (range) => {
-  return Math.floor(Math.random() * range);
-}
+let cells = [...Array(ROWS)].map((x) => Array(COLS).fill(false));
 
 function revealCell() {
-    let row = rand(ROWS);
-    let col = rand(COLS);
-    while (cells[row][col]) {
-        row = rand(ROWS);
-        col = rand(COLS);
-    }
-    cells[row][col] = true;
+  let row = rand(ROWS);
+  let col = rand(COLS);
+  while (cells[row][col]) {
+    row = rand(ROWS);
+    col = rand(COLS);
+  }
+  cells[row][col] = true;
 }
 
-function initPuzzle() {
-    for (let i=0; i<ROWS; i++) {
-        cells[i].fill(false);
+function Puzzle({ player, images, onComplete, onConfig }) {
+  const [, updateState] = React.useState();
+  const forceUpdate = React.useCallback(() => updateState({}), []);
+  const [image, setImage] = useState(images[rand(images.length)]);
+  const [showExcercise, setShowExcercise] = useState(true);
+  const [isMistake, setIsMistake] = useState(true);
+
+  const initPuzzle = () => {
+    console.log("initPuzzle");
+    for (let i = 0; i < ROWS; i++) {
+      cells[i].fill(false);
     }
-    const oldImage = bgImage;
-    do {
-        bgImage = "p" + (rand(BG_NUM) + 1) + ".jpg";
-    } while (bgImage === oldImage);
-}
+    //setImage(images[rand(images.length)]);
+    console.log("image:", image);
+  };
 
+  if (points === 0) {
+    initPuzzle();
+  }
 
+  const handleCorrect = () => {
+    points++;
+    revealCell();
 
-function Puzzle({
-    player, images, onComplete, onConfig
-}) {
+    if (points === MISSION_POINTS) {
+      setShowExcercise(false);
+      onComplete();
+      setTimeout(() => {
+        points = 0;
+        setShowExcercise(true);
 
-    const [, updateState] = React.useState();
-    const forceUpdate = React.useCallback(() => updateState({}), []);
-
-    if (points === 0) {
-        initPuzzle();
-        if (images && images.length) {
-            bgImage = images[0];
-        }
-    }
-
-    const handleCorrect = () => {
-        points++;
-        revealCell();
-
-        if (points === MISSION_POINTS) {
-            showExcercise = false;
-            onComplete();
-            setTimeout(() => {
-                points = 0;
-                showExcercise = true;
-                forceUpdate();
-            }, 8000);
-        }
-        forceUpdate();
-    };
-
-    const handleMistake = () => {
-        isMistake = true;
-        forceUpdate();
+        // reload image (for random generators)
+        setImage("");
         setTimeout(() => {
-            isMistake = false;
-            forceUpdate();
+          setImage(images[rand(images.length)]);
         }, 1000);
-    };
+      }, 8000);
+    }
+    forceUpdate();
+  };
 
-    return (
-        <Row>
-          <Col>
-            {(showExcercise && 
-              <Exercise 
-                player={player}
-                onCorrect={handleCorrect}
-                onMistake={handleMistake}
-                onUpdatePlayer={props.onConfig}
-            ></Exercise>
-            )}
-          </Col>
-          <Col xs={7}>
-            <div className="puzzle">
-                <Shake when={isMistake}>
-                    <img src={bgImage} alt="background" className="bg" />
-                    <table cellSpacing="0" className="cells">
-                        <tbody>
-                            {cells.map((row, index) =>
-                                <tr key={index}>
-                                    {row.map((isRevealed, index) => 
-                                        <td key={index} className={isRevealed ? "revealed" : ""}>{isRevealed}</td>
-                                    )}
-                                </tr>
-                            )}
-                        </tbody>
-                    </table>
-                </Shake>
-            </div>
-          </Col>
-        </Row>
-        
-    );
+  const handleMistake = () => {
+    setIsMistake(true);
+    setTimeout(() => {
+      setIsMistake(false);
+    }, 1000);
+  };
+
+  return (
+    <Row>
+      <Col>
+        {showExcercise && (
+          <Exercise
+            player={player}
+            onCorrect={handleCorrect}
+            onMistake={handleMistake}
+            onUpdatePlayer={onConfig}
+          ></Exercise>
+        )}
+      </Col>
+      <Col xs={7}>
+        <div className="puzzle">
+          <Shake when={isMistake}>
+            <img src={image} alt="background" className="bg" />
+
+            <table cellSpacing="0" className="cells">
+              <tbody>
+                {cells.map((row, index) => (
+                  <tr key={index}>
+                    {row.map((isRevealed, index) => (
+                      <td key={index} className={isRevealed ? "revealed" : ""}>
+                        {isRevealed}
+                      </td>
+                    ))}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </Shake>
+        </div>
+      </Col>
+    </Row>
+  );
 }
 
 export default Puzzle;

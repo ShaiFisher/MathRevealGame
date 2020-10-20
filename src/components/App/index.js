@@ -4,23 +4,26 @@ import Container from "react-bootstrap/Container";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import Button from "react-bootstrap/Button";
-import { FaImages } from 'react-icons/fa';
+import { FaImages } from "react-icons/fa";
 import PlayerSelect from "../PlayerSelect";
 import Puzzle from "../Puzzle";
 import Gallery from "../Gallery";
 import { t } from "../../utils/translation";
+import { getStorageItem, setStorageItem } from "../../utils/storage";
 import "./App.css";
 
-let players = JSON.parse(localStorage.getItem("players") || "[]");
-if (!players.length) {
-  players.push({
+let players = getStorageItem("players", [
+  {
     name: "Player1",
     missions: 0,
-  });
-} else {
-  // temp fix
-  players.forEach(player => player.missions = player.missions || player.Missions || 0);
-}
+  },
+]);
+
+let IMAGES = getStorageItem(
+  "images",
+  Array.from({ length: 10 }, (_, i) => "p" + (i + 1) + ".jpg")
+);
+
 //console.log("players:", players);
 let missionComplete = false;
 
@@ -29,12 +32,12 @@ function App() {
   const forceUpdate = React.useCallback(() => updateState({}), []);
   const [player, setPlayer] = useState(players[0]);
   const [showGallery, setShowGallery] = useState(false);
-  const [images, setImages] = useState(JSON.parse(localStorage.getItem("images") || "[]"));
+  const [images] = useState(getStorageItem("images", IMAGES));
 
   const handleComplete = () => {
     missionComplete = true;
     player.missions++;
-    localStorage.setItem("players", JSON.stringify(players));
+    setStorageItem("players", players);
     forceUpdate();
     setTimeout(() => {
       missionComplete = false;
@@ -43,7 +46,7 @@ function App() {
   };
 
   const handleConfigChange = () => {
-    localStorage.setItem("players", JSON.stringify(players));
+    setStorageItem("players", players);
   };
 
   const handleSwitchPlayer = (name) => {
@@ -51,15 +54,12 @@ function App() {
   };
 
   const handleGalleryClose = () => {
-    localStorage.setItem("players", JSON.stringify(players));
     setShowGallery(false);
-  }
+  };
 
   const updateImages = () => {
     console.log("updateImages");
-    localStorage.setItem("images", JSON.stringify(images));
-    //setImages(images);
-    console.log("images:", images);
+    setStorageItem("images", images);
     forceUpdate();
   };
 
@@ -96,7 +96,13 @@ function App() {
 
       {missionComplete && <Confetti />}
 
-      {showGallery && <Gallery images={images} onUpdate={updateImages} onClose={handleGalleryClose} />}
+      {showGallery && images && (
+        <Gallery
+          images={images}
+          onUpdate={updateImages}
+          onClose={handleGalleryClose}
+        />
+      )}
     </div>
   );
 }
