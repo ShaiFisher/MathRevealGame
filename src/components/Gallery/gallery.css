@@ -1,0 +1,17 @@
+.card-deck .card {
+  flex: unset;
+}
+
+.card-text {
+  text-align: left;
+}
+
+.gallery-image-remove {
+  position: absolute;
+  right: 0;
+  top: 0;
+}
+
+.jumbotron {
+    padding: 1rem 2rem;
+}
