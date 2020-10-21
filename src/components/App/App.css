@@ -21,3 +21,7 @@ table td {
   direction: ltr;
   text-align: left;
 }
+
+.inline {
+  display: inline-block;
+}

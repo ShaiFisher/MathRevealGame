@@ -68,21 +68,24 @@ function App() {
       <Container>
         <Row>
           <Col>
+            <span>
+            <Button onClick={() => setShowGallery(true)}>
+              <FaImages />
+            </Button>
+            </span>
+            <span>
             <PlayerSelect
               players={players}
               player={player}
               onPlayersChange={handleConfigChange}
               onSwitchPlayer={handleSwitchPlayer}
             ></PlayerSelect>
+            </span>
           </Col>
           <Col>
             {t("Missions")}: {player.missions || "0"}
           </Col>
-          <Col>
-            <Button onClick={() => setShowGallery(true)}>
-              <FaImages />
-            </Button>
-          </Col>
+          <Col></Col>
         </Row>
         <Row></Row>
 

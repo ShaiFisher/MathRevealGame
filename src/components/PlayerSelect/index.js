@@ -86,7 +86,7 @@ function PlayerSelect({ players, player, onPlayersChange, onSwitchPlayer }) {
   const switchPlayer = (event) => onSwitchPlayer(event.target.name);
 
   return (
-    <div>
+    <span className="inline">
       <DropdownButton title={t("Current Player") + ": " + player.name} variant="outline-secondary">
         <Dropdown.Item onClick={()=>setShowRename(true)}>{t("Rename")}</Dropdown.Item>
         <Dropdown.Item onClick={confirmRemovePlayer}>
@@ -128,7 +128,7 @@ function PlayerSelect({ players, player, onPlayersChange, onSwitchPlayer }) {
         onConfirm={removePlayer}
         onCancel={() => setShowRemove(false)}
       />
-    </div>
+    </span>
   );
 }
 
