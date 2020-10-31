@@ -3,8 +3,10 @@ import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import Shake from "react-reveal/HeadShake";
 import Exercise from "../Excercise";
-import { rand } from '../../utils/math';
+import { rand } from "../../utils/math";
 import "./puzzle.css";
+import { Button } from "react-bootstrap";
+import { BiRefresh } from "react-icons/bi";
 
 //let showExcercise = true;
 const ROWS = 4;
@@ -43,6 +45,11 @@ function Puzzle({ player, images, onComplete, onConfig }) {
     initPuzzle();
   }
 
+  const replaceImage = () => {
+    console.log("replaceImage");
+    setImage(images[rand(images.length)]);
+  }
+
   const handleCorrect = () => {
     points++;
     revealCell();
@@ -54,10 +61,9 @@ function Puzzle({ player, images, onComplete, onConfig }) {
         points = 0;
         setShowExcercise(true);
 
-        // reload image (for random generators)
-        setImage("");
+        setImage(""); // reload image (for random generators)
         setTimeout(() => {
-          setImage(images[rand(images.length)]);
+          replaceImage();
         }, 1000);
       }, 8000);
     }
@@ -83,8 +89,13 @@ function Puzzle({ player, images, onComplete, onConfig }) {
           ></Exercise>
         )}
       </Col>
-      <Col xs={7}>
-        <div className="puzzle">
+      <Col xs={7} className="no-padding">
+        <div align="right" className="btn-reload">
+          <Button onClick={replaceImage} variant="dark">
+            <BiRefresh />
+          </Button>
+        </div>
+        <Row className="puzzle">
           <Shake when={isMistake}>
             <img src={image} alt="background" className="bg" />
 
@@ -102,7 +113,7 @@ function Puzzle({ player, images, onComplete, onConfig }) {
               </tbody>
             </table>
           </Shake>
-        </div>
+        </Row>
       </Col>
     </Row>
   );

@@ -34,8 +34,15 @@ function App() {
   const [showGallery, setShowGallery] = useState(false);
   const [images] = useState(getStorageItem("images", IMAGES));
 
+  if (!player.missions) {
+    player.missions = 0;
+  }
+
   const handleComplete = () => {
     missionComplete = true;
+    if (!player.missions) {
+      player.missions = 0;
+    }
     player.missions++;
     setStorageItem("players", players);
     forceUpdate();
@@ -67,19 +74,19 @@ function App() {
     <div className="App">
       <Container>
         <Row>
-          <Col>
+          <Col className="no-padding">
             <span>
-            <Button onClick={() => setShowGallery(true)}>
-              <FaImages />
-            </Button>
+              <Button onClick={() => setShowGallery(true)}>
+                <FaImages />
+              </Button>
             </span>
             <span>
-            <PlayerSelect
-              players={players}
-              player={player}
-              onPlayersChange={handleConfigChange}
-              onSwitchPlayer={handleSwitchPlayer}
-            ></PlayerSelect>
+              <PlayerSelect
+                players={players}
+                player={player}
+                onPlayersChange={handleConfigChange}
+                onSwitchPlayer={handleSwitchPlayer}
+              ></PlayerSelect>
             </span>
           </Col>
           <Col>
