@@ -1,6 +1,6 @@
 {
   "short_name": "Math Puzzles",
-  "name": "Create React App Sample",
+  "name": "Solve simple math exercises to reveal the hidden image",
   "icons": [
     {
       "src": "favicon.ico",
