@@ -11,6 +11,11 @@ import Gallery from "../Gallery";
 import { t } from "../../utils/translation";
 import { getStorageItem, setStorageItem } from "../../utils/storage";
 import "./App.css";
+import BouncingImage from "../BouncingImage";
+
+const PRIZE_MISSIONS = 10;
+const CONFETTI_TIMER = 8000;
+const PRIZE_TIMER = 16000;
 
 let players = getStorageItem("players", [
   {
@@ -33,6 +38,7 @@ function App() {
   const [player, setPlayer] = useState(players[0]);
   const [showGallery, setShowGallery] = useState(false);
   const [images] = useState(getStorageItem("images", IMAGES));
+  const [showPrize, setShowPrize] = useState(false);
 
   if (!player.missions) {
     player.missions = 0;
@@ -45,11 +51,17 @@ function App() {
     }
     player.missions++;
     setStorageItem("players", players);
+    let timer = CONFETTI_TIMER;
+    if (player.missions % PRIZE_MISSIONS === 0) {
+      setShowPrize(true);
+      timer = PRIZE_TIMER;
+    }
     forceUpdate();
     setTimeout(() => {
       missionComplete = false;
+      setShowPrize(false);
       forceUpdate();
-    }, 8000);
+    }, timer);
   };
 
   const handleConfigChange = () => {
@@ -68,6 +80,10 @@ function App() {
     console.log("updateImages");
     setStorageItem("images", images);
     forceUpdate();
+  };
+
+  const handleBouncingClose = () => {
+    setShowPrize(false);
   };
 
   return (
@@ -105,6 +121,10 @@ function App() {
       </Container>
 
       {missionComplete && <Confetti />}
+
+      {showPrize && (
+        <BouncingImage onClose={handleBouncingClose}></BouncingImage>
+      )}
 
       {showGallery && images && (
         <Gallery
