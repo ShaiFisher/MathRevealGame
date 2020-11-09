@@ -53,6 +53,7 @@ function App() {
     if (player.missions % PRIZE_MISSIONS === 0) {
       setShowPrize(true);
     }
+    forceUpdate();
     setTimeout(() => {
       missionComplete = false;
       forceUpdate();

@@ -60,6 +60,11 @@ function initExercise() {
   num1 = rand(op.range);
   num2 = rand(op.range);
 
+  // reduce zeros
+  if (num1 === 0) {
+    num1 = rand(op.range);
+  }
+
   if (op.char === OP_MINUS && num2 > num1) {
     const temp = num1;
     num1 = num2;
