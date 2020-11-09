@@ -8,7 +8,6 @@ import "./puzzle.css";
 import { Button } from "react-bootstrap";
 import { BiRefresh } from "react-icons/bi";
 
-//let showExcercise = true;
 const ROWS = 4;
 const COLS = 6;
 const MISSION_POINTS = ROWS * COLS;
@@ -33,12 +32,9 @@ function Puzzle({ player, images, onComplete, onConfig }) {
   const [isMistake, setIsMistake] = useState(true);
 
   const initPuzzle = () => {
-    console.log("initPuzzle");
     for (let i = 0; i < ROWS; i++) {
       cells[i].fill(false);
     }
-    //setImage(images[rand(images.length)]);
-    console.log("image:", image);
   };
 
   if (points === 0) {
@@ -46,7 +42,6 @@ function Puzzle({ player, images, onComplete, onConfig }) {
   }
 
   const replaceImage = () => {
-    console.log("replaceImage");
     setImage(images[rand(images.length)]);
   }
 

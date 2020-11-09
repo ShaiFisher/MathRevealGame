@@ -1,11 +1,11 @@
 import React, { Component } from "react";
 import "./BouncingImage.css";
 
-const COUNT_DOWN = 240;
+const SLOW_AFTER = 240;
 const INTERVAL = 80;
 const SHIFT = 10;
-let dirX = 1;
-let dirY = 1;
+const ROCK_SIZE = 300;
+const MAX_FRACTION = 4;   // 2,4,8,...
 let intervalId;
 
 function getComputedStyle(className) {
@@ -34,69 +34,105 @@ function isOutOfRange(pos, screenLength, imageLength) {
 class BouncingImage extends Component {
   constructor(props) {
     super(props);
-    this.state = { currentCount: COUNT_DOWN, posX: 0, posY: 0 };
+    const rocks = [
+      {
+        posX: 0,
+        posY: 0,
+        dirX: 1,
+        dirY: 1,
+        size: 1,
+      },
+    ];
+    this.state = { currentCount: 0, posX: 0, posY: 0, rocks: rocks };
+    this.onEnd = props.onClose;
   }
 
-  timer() {
-    this.setState({
-      currentCount: this.state.currentCount - 1,
-      posX: this.state.posX + SHIFT * dirX,
-      posY: this.state.posY + SHIFT * dirY,
+  moveRocks() {
+    // after few intervals, slow movement by half (by skiping half of intervals)
+    if (this.state.currentCount > SLOW_AFTER && this.state.currentCount % 2 === 0) {
+      this.setState({
+        currentCount: this.state.currentCount + 1
+      });
+      return;
+    }
+    const screenWidth = getWidth("bnc-screen");
+    const screenHeight = getHeight("bnc-screen");
+    this.state.rocks.forEach((rock) => {
+      rock.posX = rock.posX + SHIFT * rock.dirX;
+      rock.posY = rock.posY + SHIFT * rock.dirY;
+      if (isOutOfRange(rock.posX, screenWidth, ROCK_SIZE / rock.size)) {
+        rock.dirX *= -1;
+      }
+      if (isOutOfRange(rock.posY, screenHeight, ROCK_SIZE / rock.size)) {
+        rock.dirY *= -1;
+      }
     });
-    /*console.log("X:", this.state.posX, getWidth("bouncing-screen"));
-    console.log("Y:", this.state.posY, getHeight("bouncing-screen"));
-    console.log(
-      "Image dim:",
-      getWidth("bouncing-image"),
-      getHeight("bouncing-image")
-    );*/
-    if (
-      isOutOfRange(
-        this.state.posX,
-        getWidth("bnc-screen"),
-        getWidth("bnc-image")
-      )
-    ) {
-      dirX *= -1;
-    }
-    if (
-      isOutOfRange(
-        this.state.posY,
-        getHeight("bnc-screen"),
-        getHeight("bnc-image")
-      )
-    ) {
-      dirY *= -1;
-    }
-    console.log("interval:", this.intervalId, this.state.currentCount);
-    // if countdown done or element is gone
-    if (this.state.currentCount < 1 || !getWidth("bnc-screen")) {
+    this.setState({
+      currentCount: this.state.currentCount + 1,
+      rocks: this.state.rocks,
+    });
+
+    // if element is gone
+    if (!getWidth("bnc-screen")) {
       clearInterval(this.intervalId);
     }
   }
 
   componentDidMount() {
-    this.intervalId = setInterval(this.timer.bind(this), INTERVAL);
-    console.log("set interval:", this.intervalId);
+    this.intervalId = setInterval(this.moveRocks.bind(this), INTERVAL);
+    //console.log("set interval:", this.intervalId);
     intervalId = this.intervalId;
   }
 
-  stopAnimation() {
-    console.log("stopAnimation:", this, intervalId);
+  endGame() {
+    //console.log("endGame:", this, intervalId);
     clearInterval(intervalId);
+    this.onEnd();
+  }
+
+  splitRock(index) {
+    const rocks = this.state.rocks;
+    const rock = rocks[index];
+    if (!rock) {
+      return;
+    }
+    //console.log("splitRock:", index, rock.size);
+    if (rock.size >= MAX_FRACTION) {
+      rocks.splice(index, 1);
+      if (rocks.length === 0) {
+        this.endGame();
+      }
+    } else {
+      rock.dirY *= -1;
+      rock.size *= 2;
+      this.state.rocks.push({
+        ...rock,
+        dirY: rock.dirY * -1,
+        dirX: rock.dirX * -1,
+      });
+    }
   }
 
   render() {
     return (
       <div className="bouncing-screen" id="bnc-screen">
-        <div
-          id="bnc-image"
-          className="bouncing-image"
-          onClick={this.stopAnimation}
-          style={{ top: this.state.posY + "px", left: this.state.posX + "px" }}
-        >
-          <img src="chocolate.png" alt="Chocolate!"></img>
-        </div>
+        {this.state.rocks.map((rock, index) => (
+          <div
+            key={index}
+            className="bouncing-image"
+            onClick={() => this.splitRock(index)}
+            style={{ top: rock.posY + "px", left: rock.posX + "px" }}
+          >
+            <img
+              src="chocolate.png"
+              alt="Chocolate!"
+              style={{
+                width: ROCK_SIZE / rock.size + "px",
+                height: ROCK_SIZE / rock.size + "px",
+              }}
+            ></img>
+          </div>
+        ))}
       </div>
     );
   }
