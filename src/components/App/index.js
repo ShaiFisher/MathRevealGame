@@ -15,7 +15,6 @@ import BouncingImage from "../BouncingImage";
 
 const PRIZE_MISSIONS = 10;
 const CONFETTI_TIMER = 8000;
-const PRIZE_TIMER = 16000;
 
 let players = getStorageItem("players", [
   {
@@ -51,17 +50,13 @@ function App() {
     }
     player.missions++;
     setStorageItem("players", players);
-    let timer = CONFETTI_TIMER;
     if (player.missions % PRIZE_MISSIONS === 0) {
       setShowPrize(true);
-      timer = PRIZE_TIMER;
     }
-    forceUpdate();
     setTimeout(() => {
       missionComplete = false;
-      setShowPrize(false);
       forceUpdate();
-    }, timer);
+    }, CONFETTI_TIMER);
   };
 
   const handleConfigChange = () => {
@@ -77,7 +72,6 @@ function App() {
   };
 
   const updateImages = () => {
-    console.log("updateImages");
     setStorageItem("images", images);
     forceUpdate();
   };

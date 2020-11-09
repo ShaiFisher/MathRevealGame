@@ -51,7 +51,7 @@ let isWrong = false;
 let currentPlayerName;
 
 function initExercise() {
-  console.log('initExercise:', operators);
+  //console.log('initExercise:', operators);
   do {
     const opi = rand(operators.length);
     op = operators[opi];
