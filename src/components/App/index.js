@@ -8,10 +8,11 @@ import { FaImages } from "react-icons/fa";
 import PlayerSelect from "../PlayerSelect";
 import Puzzle from "../Puzzle";
 import Gallery from "../Gallery";
+import BouncingImage from "../BouncingImage";
+import LanguageSelect from "../LanguageSelect";
 import { t } from "../../utils/translation";
 import { getStorageItem, setStorageItem } from "../../utils/storage";
 import "./App.css";
-import BouncingImage from "../BouncingImage";
 
 const PRIZE_MISSIONS = 10;
 const CONFETTI_TIMER = 8000;
@@ -38,6 +39,9 @@ function App() {
   const [showGallery, setShowGallery] = useState(false);
   const [images] = useState(getStorageItem("images", IMAGES));
   const [showPrize, setShowPrize] = useState(false);
+  const [language, setLanguage] = useState(
+    getStorageItem("language", navigator.language.substr(0, 2))
+  );
 
   if (!player.missions) {
     player.missions = 0;
@@ -81,6 +85,11 @@ function App() {
     setShowPrize(false);
   };
 
+  const handleLanguageChange = (lang) => {
+    setLanguage(lang);
+    setStorageItem("language", lang);
+  };
+
   return (
     <div className="App">
       <Container>
@@ -103,7 +112,12 @@ function App() {
           <Col>
             {t("Missions")}: {player.missions || "0"}
           </Col>
-          <Col></Col>
+          <Col className="right">
+            <LanguageSelect
+              language={language}
+              onchange={handleLanguageChange}
+            ></LanguageSelect>
+          </Col>
         </Row>
         <Row></Row>
 
