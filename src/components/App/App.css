@@ -29,3 +29,7 @@ table td {
 .inline {
   display: inline-block;
 }
+
+.right {
+  text-align: right;
+}
